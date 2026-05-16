@@ -1,0 +1,28 @@
+{
+  "name": "@example/ui-backend-model",
+  "version": "0.1.0",
+  "description": "TypeScript types generated from schema/model.schema.json",
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "schema"],
+  "publishConfig": {
+    "registry": "http://2.27.22.23:8081/repository/npm-hosted/",
+    "access": "restricted"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prebuild": "node ../../tools/codegen-ts.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./schema.json": "./schema/model.schema.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

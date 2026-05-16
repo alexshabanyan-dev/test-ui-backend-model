@@ -1,0 +1,11 @@
+node_modules/
+packages/ts/node_modules/
+packages/ts/dist/
+# Uncomment to ignore generated TS (then must run codegen:ts before build):
+# packages/ts/src/generated/
+packages/java/.gradle/
+packages/java/build/
+*.tgz
+.DS_Store
+.npmrc
+packages/java/gradle.properties

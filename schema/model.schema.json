@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://example.com/meta-model/model.schema.json",
+    "title": "RootModel",
+    "description": "Test SSOT schema for UI + backend code generation",
+    "type": "object",
+    "properties": {
+        "version": {
+            "type": "string",
+            "description": "Contract version of the payload"
+        },
+        "account": {
+            "$ref": "#/definitions/Account"
+        }
+    },
+    "required": ["version", "account"],
+    "definitions": {
+        "Person": {
+            "type": "object",
+            "description": "A person referenced from account or team",
+            "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "role": {
+                    "type": "string",
+                    "enum": ["admin", "user"]
+                }
+            },
+            "required": ["id", "name", "role"]
+        },
+        "Address": {
+            "type": "object",
+            "description": "Postal address",
+            "properties": {
+                "city": { "type": "string" },
+                "country": { "type": "string" }
+            },
+            "required": ["city", "country"]
+        },
+        "Team": {
+            "type": "object",
+            "description": "Team inside an account",
+            "properties": {
+                "title": { "type": "string" },
+                "members": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/Person" }
+                }
+            },
+            "required": ["title", "members"]
+        },
+        "Account": {
+            "type": "object",
+            "description": "Main business object",
+            "properties": {
+                "id": { "type": "string" },
+                "owner": { "$ref": "#/definitions/Person" },
+                "billingAddress": { "$ref": "#/definitions/Address" },
+                "teams": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/Team" }
+                }
+            },
+            "required": ["id", "owner"]
+        }
+    }
+}
