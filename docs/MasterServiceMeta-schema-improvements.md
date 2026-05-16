@@ -109,6 +109,148 @@
 
 **Опционально (косметика):** переименовать definition в `StringMap` / `PopupMap` — в payload имена ключей не меняются.
 
+#### Пример на цепочке: `Popup.pickMap`
+
+Ниже — один и тот же фрагмент контракта от эталона до сгенерированного кода. **JSON в API до и после правки одинаковый**; меняется только то, как схема описывает словарь для генераторов.
+
+**1. Эталон (две связанные части схемы)**
+
+Definition словаря (стр. 6–9):
+
+```json
+"Record<string,string>": {
+    "description": "Construct a type with a set of properties K of type T",
+    "type": "object"
+}
+```
+
+Использование в `Popup` (стр. 1165–1186):
+
+```json
+"Popup": {
+    "description": "Popups ",
+    "properties": {
+        "pickMap": {
+            "$ref": "#/definitions/Record<string,string>"
+        },
+        "popupBcName": { "type": "string" },
+        "type": { "enum": ["pickList"], "type": "string" }
+    },
+    "required": ["pickMap", "popupBcName", "type"],
+    "type": "object"
+}
+```
+
+**2. Пример JSON (payload не меняется)**
+
+```json
+{
+  "pickMap": {
+    "clientId": "party_id",
+    "contractNum": "agreement_no"
+  },
+  "popupBcName": "PartyLookup",
+  "type": "pickList"
+}
+```
+
+Ключи `pickMap` динамические; значения — **строки**. И до, и после правки схемы такой объект остаётся валидным.
+
+**3. Сейчас → TypeScript** (`json-schema-to-typescript`)
+
+Из definition `Record<string,string>`:
+
+```ts
+export interface RecordStringString {}
+```
+
+Из definition `Popup`:
+
+```ts
+export interface Popup {
+  pickMap: RecordStringString;
+  popupBcName: string;
+  type: "pickList";
+}
+```
+
+Проблема: `RecordStringString` — пустой интерфейс. В TS нельзя написать `popup.pickMap["clientId"]` как `string` без обходных путей; автодополнение по ключам словаря не работает.
+
+**4. Сейчас → Java** (quicktype)
+
+Отдельного класса `Popup.java` в сборке **нет** — quicktype встраивает поля веток `WidgetField` в общий `Field` / `WidgetField`. Там же живёт `pickMap`:
+
+```java
+private Map<String, Object> pickMap;
+
+@JsonProperty("pickMap")
+public Map<String, Object> getPickMap() { return pickMap; }
+
+@JsonProperty("pickMap")
+public void setPickMap(Map<String, Object> value) { this.pickMap = value; }
+```
+
+Файлы: `packages/java/build/generated-sources/quicktype/WidgetField.java`, `Field.java`.
+
+Проблема: значения словаря — `Object`, хотя в JSON это всегда строки.
+
+**5. После правки definition (ожидаемо) → TypeScript**
+
+```json
+"Record<string,string>": {
+  "type": "object",
+  "additionalProperties": { "type": "string" }
+}
+```
+
+Ожидаемая генерация (точный синтаксис зависит от версии j2ts):
+
+```ts
+export type RecordStringString = { [key: string]: string };
+// или Record<string, string>
+
+export interface Popup {
+  pickMap: Record<string, string>;
+  popupBcName: string;
+  type: "pickList";
+}
+```
+
+Использование в UI:
+
+```ts
+const col: string = popup.pickMap["clientId"]; // тип string
+```
+
+**6. После правки definition (ожидаемо) → Java**
+
+```json
+"Record<string,string>": {
+  "type": "object",
+  "additionalProperties": { "type": "string" }
+}
+```
+
+Ожидаемая генерация для того же поля:
+
+```java
+private Map<String, String> pickMap;
+
+public Map<String, String> getPickMap() { return pickMap; }
+public void setPickMap(Map<String, String> value) { this.pickMap = value; }
+```
+
+Если quicktype начнёт эмитить отдельный `Popup.java`, у него будет `Map<String, String> pickMap` по той же схеме.
+
+**7. Сводка «до / после» только для `pickMap`**
+
+| Звено | Сейчас | После `additionalProperties` |
+|-------|--------|--------------------------------|
+| JSON `pickMap` | `{ "clientId": "party_id", ... }` | **то же самое** |
+| Схема | `type: object` без типа значений | `additionalProperties: { type: string }` |
+| TS | `RecordStringString {}` | `{ [key: string]: string }` |
+| Java | `Map<String, Object>` | `Map<String, String>` |
+
 ---
 
 ### 5.2. `Screen.navigation` — в `required`, но нет в `properties`
