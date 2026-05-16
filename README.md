@@ -86,10 +86,11 @@ import schema from '@example/ui-backend-model/schema.json'
 **Backend:**
 
 ```java
-import com.example.metamodel.MasterServiceMetaClass;
+import com.example.metamodel.MasterServiceMeta;
 
-// Документ meta JSON → MasterServiceMetaClass (не union-обёртка MasterServiceMeta).
 // ObjectMapper + JavaTimeModule для OffsetDateTime.
+// После правки эталона (title + type: object в корне) пересобери Java и проверь,
+// что нет union-обёртки masterServiceMetaClassValue.
 ```
 
 Схема в JAR: `classpath:MasterServiceMeta.json` (эталон без изменений).
