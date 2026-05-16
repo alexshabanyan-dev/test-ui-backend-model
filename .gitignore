@@ -1,11 +1,42 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node / npm
 node_modules/
-packages/ts/node_modules/
+*.tgz
+
+# Secrets & local env (keep *.example in repo)
+.npmrc
+.env
+.env.*
+!.env.example
+!**/.env.example
+config/nexus.env
+packages/java/gradle.properties
+deploy/.env
+
+# TypeScript build output (generated in packages/ts/src stays in repo for convenience)
 packages/ts/dist/
-# Uncomment to ignore generated TS (then must run codegen:ts before build):
+packages/ts/node_modules/
+
+# Uncomment to ignore generated TS (then run npm run codegen:ts before build):
 # packages/ts/src/generated/
+
+# Java / Gradle
 packages/java/.gradle/
 packages/java/build/
-*.tgz
-.DS_Store
-.npmrc
-packages/java/gradle.properties
+
+# Local Maven cache (if publishing from dev machine)
+.m2/
