@@ -9,8 +9,9 @@ version =
     findProperty("releaseVersion")?.toString()?.takeIf { it.isNotBlank() } ?: "0.1.0"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 repositories {

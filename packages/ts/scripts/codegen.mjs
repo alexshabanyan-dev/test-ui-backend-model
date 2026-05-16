@@ -4,9 +4,10 @@ import { fileURLToPath } from 'url'
 import { compileFromFile } from 'json-schema-to-typescript'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const root = join(__dirname, '..')
-const schemaPath = join(root, 'schema', 'model.schema.json')
-const outDir = join(root, 'packages', 'ts', 'src', 'generated')
+const pkgRoot = join(__dirname, '..')
+const repoRoot = join(pkgRoot, '../..')
+const schemaPath = join(repoRoot, 'schema', 'model.schema.json')
+const outDir = join(pkgRoot, 'src', 'generated')
 const outFile = join(outDir, 'model.ts')
 
 mkdirSync(outDir, { recursive: true })
@@ -17,14 +18,13 @@ const banner =
 const ts = await compileFromFile(schemaPath, {
     bannerComment: banner,
     additionalProperties: false,
-    cwd: join(root, 'schema'),
+    cwd: join(repoRoot, 'schema'),
 })
 
 writeFileSync(outFile, ts, 'utf8')
 console.log(`Wrote ${outFile}`)
 
-// Copy SSOT into npm package for consumers / validation
-const schemaDestDir = join(root, 'packages', 'ts', 'schema')
+const schemaDestDir = join(pkgRoot, 'schema')
 const schemaDest = join(schemaDestDir, 'model.schema.json')
 mkdirSync(schemaDestDir, { recursive: true })
 copyFileSync(schemaPath, schemaDest)

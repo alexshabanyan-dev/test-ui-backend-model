@@ -13,8 +13,9 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Node / npm
-node_modules/
+# Node / npm (only packages/ts; ignore legacy root install)
+/node_modules/
+packages/ts/node_modules/
 *.tgz
 
 # Secrets & local env (keep *.example in repo)
@@ -29,9 +30,8 @@ deploy/.env
 
 # TypeScript build output (generated in packages/ts/src stays in repo for convenience)
 packages/ts/dist/
-packages/ts/node_modules/
 
-# Uncomment to ignore generated TS (then run npm run codegen:ts before build):
+# Uncomment to ignore generated TS (then run make codegen before build):
 # packages/ts/src/generated/
 
 # Java / Gradle

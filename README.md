@@ -15,18 +15,44 @@
 ## Структура
 
 ```
-schema/model.schema.json     ← правим только здесь
+schema/model.schema.json     ← правим только здесь (SSOT)
+packages/ts/scripts/codegen.mjs  ← генерация TS (Node)
 packages/ts/                 ← @example/ui-backend-model (npm)
 packages/java/               ← com.example:ui-backend-model (Gradle)
-tools/codegen-ts.mjs         ← JSON Schema → TypeScript
+Makefile                     ← оркестратор сборки
 ```
 
-## Локальная сборка
+Node/npm только в `packages/ts`. Корневого `package.json` нет.
+
+## Локальная сборка (Make)
+
+Первый раз (создаёт `packages/ts/package-lock.json` — закоммить в git):
 
 ```bash
-# из корня репозитория
-npm install
-npm run build
+cd packages/ts && npm install && cd ../..
+```
+
+Дальше:
+
+```bash
+make build          # codegen → tsc + gradle (параллельно)
+```
+
+Отдельно:
+
+```bash
+make deps-ts        # npm ci в packages/ts
+make codegen        # только TS codegen из schema/
+make build-ts       # codegen + tsc → packages/ts/dist
+make build-java     # codegen + ./gradlew build
+make clean
+```
+
+Java **21** (как у backend). Gradle toolchain может скачать JDK сам при первой сборке; иначе:
+
+```bash
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)   # macOS
+make build-java
 ```
 
 Первый раз для Java (если нет `gradlew`):
@@ -36,13 +62,6 @@ cd packages/java
 gradle wrapper --gradle-version 8.10.2
 ./gradlew build
 cd ../..
-```
-
-Отдельно:
-
-```bash
-npm run build:ts    # codegen + tsc → packages/ts/dist
-npm run build:java  # Gradle + jsonschema2pojo → packages/java/build
 ```
 
 ## Публикация в Nexus
@@ -69,9 +88,10 @@ cp packages/java/gradle.properties.example packages/java/gradle.properties
 ### Публикация вручную
 
 ```bash
-npm install
-npm run publish:ts    # → npm-hosted
-npm run publish:java  # → maven-releases (нужен gradle.properties или env)
+make publish-ts     # → npm-hosted (нужен .npmrc в корне)
+make publish-java   # → maven-releases (нужен gradle.properties или env)
+# или
+make publish
 ```
 
 Версию `0.1.0` поднимать синхронно в `packages/ts/package.json` и `packages/java` (`-PreleaseVersion=0.1.1` или `releaseVersion=` в gradle.properties).
@@ -103,10 +123,6 @@ dependencies {
 }
 ```
 
-## Jenkins (идея)
-
-См. `Jenkinsfile.example` — credentials `nexus-npm-token`, `nexus-maven`.
-
 ## Потребители
 
 **UI:**
@@ -126,7 +142,7 @@ implementation("com.example:ui-backend-model:0.1.0")
 ```
 
 ```java
-import com.example.metamodel.RootModel;
+import com.example.metamodel.ModelSchema;
 import com.example.metamodel.Account;
 ```
 
