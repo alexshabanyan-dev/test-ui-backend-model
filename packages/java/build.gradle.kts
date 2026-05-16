@@ -1,7 +1,6 @@
 plugins {
     java
     `maven-publish`
-    id("org.jsonschema2pojo") version "1.2.2"
 }
 
 group = "com.example"
@@ -19,26 +18,61 @@ repositories {
 }
 
 dependencies {
-    // jsonschema2pojo defaults to Jackson annotations on generated types
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.3")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.3")
 }
 
-val schemaFile = file("../../schema/model.schema.json")
+val schemaFile = file("../../schema/MasterServiceMeta.json")
+val quicktypeOutDir = layout.buildDirectory.dir("generated-sources/quicktype")
 
-jsonSchema2Pojo {
-    setSource(files(schemaFile))
-    targetPackage = "com.example.metamodel"
-    targetVersion = "21"
-    generateBuilders = true
-    includeJsr303Annotations = false
-    useJakartaValidation = false
+tasks.register<Exec>("quicktypeGenerate") {
+    group = "build"
+    description = "Generate Java types from SSOT schema (quicktype, Jackson)"
+
+    val outDir = quicktypeOutDir.get().asFile
+    val quicktypeBin =
+        file("../ts/node_modules/.bin/quicktype").takeIf { it.exists() }
+            ?: error(
+                "quicktype not found. Install TS deps first: make deps-ts " +
+                    "(or cd packages/ts && npm install)",
+            )
+
+    inputs.file(schemaFile)
+    outputs.dir(outDir)
+
+    doFirst {
+        outDir.deleteRecursively()
+        outDir.mkdirs()
+    }
+
+    val outFile = outDir.resolve("MasterServiceMeta.java")
+
+    commandLine(
+        quicktypeBin.absolutePath,
+        "--src-lang",
+        "schema",
+        "--lang",
+        "java",
+        "--package",
+        "com.example.metamodel",
+        "-o",
+        outFile.absolutePath,
+        schemaFile.absolutePath,
+    )
+}
+
+tasks.named<JavaCompile>("compileJava") {
+    dependsOn("quicktypeGenerate")
 }
 
 sourceSets {
     main {
+        java {
+            srcDir(quicktypeOutDir)
+        }
         resources {
             srcDir("../../schema")
-            include("model.schema.json")
+            include("MasterServiceMeta.json")
         }
     }
 }

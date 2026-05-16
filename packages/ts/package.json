@@ -1,7 +1,7 @@
 {
   "name": "@example/ui-backend-model",
   "version": "0.1.0",
-  "description": "TypeScript types generated from schema/model.schema.json",
+  "description": "TypeScript types generated from schema/MasterServiceMeta.json",
   "license": "UNLICENSED",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,7 +11,7 @@
     "access": "restricted"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "npx tsc"
   },
   "exports": {
     ".": {
@@ -19,10 +19,12 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
-    "./schema.json": "./schema/model.schema.json"
+    "./schema.json": "./schema/MasterServiceMeta.json",
+    "./MasterServiceMeta.json": "./schema/MasterServiceMeta.json"
   },
   "devDependencies": {
     "json-schema-to-typescript": "^15.0.4",
+    "quicktype": "^23.2.6",
     "typescript": "^5.8.3"
   }
 }

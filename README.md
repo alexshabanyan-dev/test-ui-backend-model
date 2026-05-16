@@ -4,22 +4,18 @@
 
 ## SSOT (единственный источник правды)
 
-`schema/model.schema.json` — JSON Schema Draft-07.
+`schema/MasterServiceMeta.json` — JSON Schema Draft-07 (модель учёта мастер-сервиса).
 
-Модель (упрощённо):
-
-- `RootModel` — корень (`version`, `account`)
-- `Account` — `id`, `owner`, `billingAddress?`, `teams?`
-- `Person`, `Address`, `Team` — в `definitions`
+Корень схемы: `name`, `header`, `footer`, `datamodel`, `businessComponents`, `routes`, `roles`, `userFlexibleAttribute`, `navigation` + большой блок `definitions`.
 
 ## Структура
 
 ```
-schema/model.schema.json     ← правим только здесь (SSOT)
-packages/ts/scripts/codegen.mjs  ← генерация TS (Node)
-packages/ts/                 ← @example/ui-backend-model (npm)
-packages/java/               ← com.example:ui-backend-model (Gradle)
-Makefile                     ← оркестратор сборки
+schema/MasterServiceMeta.json  ← правим только здесь (SSOT)
+packages/ts/scripts/codegen.mjs
+packages/ts/
+packages/java/
+Makefile
 ```
 
 Node/npm только в `packages/ts`. Корневого `package.json` нет.
@@ -41,19 +37,14 @@ make build          # codegen → tsc + gradle (параллельно)
 Отдельно:
 
 ```bash
-make deps-ts        # npm ci в packages/ts
-make codegen        # только TS codegen из schema/
-make build-ts       # codegen + tsc → packages/ts/dist
-make build-java     # codegen + ./gradlew build
+make deps-ts
+make codegen
+make build-ts
+make build-java
 make clean
 ```
 
-Java **21** (как у backend). Gradle toolchain может скачать JDK сам при первой сборке; иначе:
-
-```bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)   # macOS
-make build-java
-```
+Java **21**. Gradle toolchain может скачать JDK сам; иначе `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` и `make build-java`.
 
 Первый раз для Java (если нет `gradlew`):
 
@@ -64,86 +55,41 @@ gradle wrapper --gradle-version 8.10.2
 cd ../..
 ```
 
-## Публикация в Nexus
+> Схема большая (~2700 строк): первая генерация TS/Java может занять заметное время.
 
-Nexus: [npm-hosted](http://2.27.22.23:8081/#browse/browse:npm-hosted) (UI). Для CLI используй **repository URL**, не browse:
+**Java codegen:** [quicktype](https://quicktype.io/) читает **эталон** `schema/MasterServiceMeta.json` напрямую (Jackson по умолчанию).  
+Исходники: `packages/java/build/generated-sources/quicktype/`. В JAR для runtime — тот же эталон из `schema/`.  
+Перед `./gradlew build` нужен `make deps-ts` (quicktype в `packages/ts/node_modules`).
+
+## Публикация в Nexus
 
 | Артефакт | Координаты | Repository URL |
 |----------|------------|----------------|
 | npm | `@example/ui-backend-model` | `http://2.27.22.23:8081/repository/npm-hosted/` |
 | Maven | `com.example:ui-backend-model` | `http://2.27.22.23:8081/repository/maven-releases/` |
 
-Имя Maven-репозитория проверь в Nexus → **Administration → Repositories** (часто `maven-releases` или `maven-hosted`).
-
-### Один раз: учётные данные
-
 ```bash
 cp .npmrc.example .npmrc
 cp packages/java/gradle.properties.example packages/java/gradle.properties
-# заполни user/password или token
-```
-
-Либо через env: `config/nexus.env.example`.
-
-### Публикация вручную
-
-```bash
-make publish-ts     # → npm-hosted (нужен .npmrc в корне)
-make publish-java   # → maven-releases (нужен gradle.properties или env)
-# или
 make publish
-```
-
-Версию `0.1.0` поднимать синхронно в `packages/ts/package.json` и `packages/java` (`-PreleaseVersion=0.1.1` или `releaseVersion=` в gradle.properties).
-
-### Потребители из Nexus
-
-**npm** — в проекте UI `.npmrc`:
-
-```
-@example:registry=http://2.27.22.23:8081/repository/npm-hosted/
-```
-
-```bash
-npm install @example/ui-backend-model@0.1.0
-```
-
-**Maven/Gradle** — в `build.gradle.kts`:
-
-```kotlin
-repositories {
-    maven {
-        url = uri("http://2.27.22.23:8081/repository/maven-releases/")
-        isAllowInsecureProtocol = true
-    }
-    mavenCentral()
-}
-dependencies {
-    implementation("com.example:ui-backend-model:0.1.0")
-}
 ```
 
 ## Потребители
 
 **UI:**
 
-```bash
-npm install @example/ui-backend-model@0.1.0
-```
-
 ```ts
-import type { RootModel, Account } from '@example/ui-backend-model'
+import type { MasterServiceMeta, MetaNode } from '@example/ui-backend-model'
+import schema from '@example/ui-backend-model/schema.json'
 ```
 
 **Backend:**
 
-```gradle
-implementation("com.example:ui-backend-model:0.1.0")
-```
-
 ```java
-import com.example.metamodel.ModelSchema;
-import com.example.metamodel.Account;
+import com.example.metamodel.MasterServiceMetaClass;
+
+// Документ meta JSON → MasterServiceMetaClass (не union-обёртка MasterServiceMeta).
+// ObjectMapper + JavaTimeModule для OffsetDateTime.
 ```
 
-Схема в JAR: `classpath:model.schema.json` (из `src/main/resources`).
+Схема в JAR: `classpath:MasterServiceMeta.json` (эталон без изменений).

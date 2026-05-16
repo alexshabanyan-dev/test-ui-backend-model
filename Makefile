@@ -1,5 +1,5 @@
 # Schema-first contract repo: Make orchestrates Node (TS) + Gradle (Java).
-# Node/npm only under packages/ts.
+# Node/npm only under packages/ts (TS codegen + quicktype for Java).
 
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 TS_PKG := $(ROOT)/packages/ts
@@ -10,11 +10,11 @@ JAVA_PKG := $(ROOT)/packages/java
 
 help:
 	@echo "Targets:"
-	@echo "  make deps-ts     npm ci (or npm install if no package-lock.json)"
+	@echo "  make deps-ts     npm ci in packages/ts (typescript + quicktype + codegen)"
 	@echo "  make codegen     generate TS from schema (requires deps-ts)"
 	@echo "  make build       codegen + tsc + gradle build (ts and java in parallel)"
 	@echo "  make build-ts    codegen + tsc"
-	@echo "  make build-java  codegen + ./gradlew build"
+	@echo "  make build-java  deps-ts + ./gradlew build (quicktype → Java)"
 	@echo "  make publish-ts  build-ts + npm publish (packages/ts)"
 	@echo "  make publish-java build-java + ./gradlew publish"
 	@echo "  make publish     publish-ts and publish-java"
@@ -35,7 +35,7 @@ codegen: deps-ts
 build-ts: codegen
 	cd "$(TS_PKG)" && npm run build
 
-build-java: codegen
+build-java: deps-ts
 	cd "$(JAVA_PKG)" && ./gradlew build
 
 build: codegen
@@ -44,6 +44,7 @@ build: codegen
 _build-ts:
 	cd "$(TS_PKG)" && npm run build
 
+# deps-ts already ran in codegen; do not npm ci here (races with _build-ts)
 _build-java:
 	cd "$(JAVA_PKG)" && ./gradlew build
 
