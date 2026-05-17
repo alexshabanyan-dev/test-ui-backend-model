@@ -1,7 +1,5 @@
  {
 "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "MasterServiceMeta",
-    "type": "object",
     "definitions": {
         "Record<string,string>": {
             "description": "Construct a type with a set of properties K of type T",
@@ -1990,24 +1988,25 @@
                 },
                 "widget": {
                     "anyOf": [
-                        {
-                            "$ref": "#/definitions/WidgetLegacy"
-                        }
-                    ]
-                },
+                    {
+                        "$ref": "#/definitions/WidgetLegacy"
+                    }
+                ],
                 "permissions": {
                     "description": "Полномочие, необходимое для работы пользователя с виджетом",
                     "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/Permission"
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/definitions/Permission"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/BasePermission"
+                                    }
+                                ]
                             },
-                            {
-                                "$ref": "#/definitions/BasePermission"
-                            }
-                        ]
-                    },
                     "type": "array"
+                },
+                "type": "object"
                 }
             },
             "required": [
@@ -2033,24 +2032,25 @@
                 },
                 "widget": {
                     "anyOf": [
-                        {
-                            "$ref": "#/definitions/WidgetMeta"
-                        }
-                    ]
-                },
+                    {
+                        "$ref": "#/definitions/WidgetMeta"
+                    }
+                ],
                 "permissions": {
                     "description": "Полномочие, необходимое для работы пользователя с виджетом",
                     "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/Permission"
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/definitions/Permission"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/BasePermission"
+                                    }
+                                ]
                             },
-                            {
-                                "$ref": "#/definitions/BasePermission"
-                            }
-                        ]
-                    },
                     "type": "array"
+                },
+                "type": "object"
                 }
             },
             "required": [
@@ -2075,17 +2075,14 @@
                         "type": "string"
                     },
                     "widgets": {
-                        "type": "array",
-                        "items": {
-                            "anyOf": [
-                                {
-                                    "$ref": "#/definitions/ViewMetaWidgetLegacy"
-                                },
-                                {
-                                    "$ref": "#/definitions/ViewMetaWidget"
-                                }
-                            ]
-                        },
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/ViewMetaWidgetLegacy"
+                            },
+                            {
+                                "$ref": "#/definitions/ViewMetaWidget"
+                            }
+                        ],
                         "description": "Widgets present on the view"
                     }
                 },
@@ -2137,6 +2134,7 @@
                 },
                 "required": [
                     "name",
+                    "navigation",
                     "primaryViewName",
                     "primaryViews",
                     "title"
