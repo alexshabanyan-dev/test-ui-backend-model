@@ -62,7 +62,7 @@ publish-ts: build-ts
 ifdef RELEASE_VERSION
 	cd "$(TS_PKG)" && npm version "$(RELEASE_VERSION)" --no-git-tag-version --allow-same-version
 endif
-	cd "$(TS_PKG)" && npm publish
+	cd "$(TS_PKG)" && npm publish --userconfig="$(ROOT)/.npmrc"
 
 publish-java: build-java
 	cd "$(JAVA_PKG)" && ./gradlew publish $(if $(RELEASE_VERSION),-PreleaseVersion=$(RELEASE_VERSION),)

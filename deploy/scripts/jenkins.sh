@@ -33,13 +33,20 @@ case "$MODE" in
     : "${NEXUS_USERNAME:?Set NEXUS_USERNAME (Jenkins nexus-user-pass)}"
     : "${NEXUS_PASSWORD:?Set NEXUS_PASSWORD (Jenkins nexus-user-pass)}"
 
-    NPM_AUTH="$(printf '%s:%s' "${NEXUS_USERNAME}" "${NEXUS_PASSWORD}" | base64 -w0 2>/dev/null || printf '%s:%s' "${NEXUS_USERNAME}" "${NEXUS_PASSWORD}" | base64)"
+    NEXUS_USERNAME="${NEXUS_USERNAME//$'\r'/}"
+    NEXUS_PASSWORD="${NEXUS_PASSWORD//$'\r'/}"
+
+    NPM_AUTH="$(printf '%s:%s' "${NEXUS_USERNAME}" "${NEXUS_PASSWORD}" | base64 | tr -d '\n')"
 
     cat > "${ROOT}/.npmrc" <<EOF
 @example:registry=http://${NEXUS_HOST}/repository/npm-hosted/
 //${NEXUS_HOST}/repository/npm-hosted/:_auth=${NPM_AUTH}
 //${NEXUS_HOST}/repository/npm-hosted/:always-auth=true
 EOF
+
+    echo "=== npm auth check ==="
+    cd "${ROOT}/packages/ts"
+    npm whoami --userconfig="${ROOT}/.npmrc" --registry="http://${NEXUS_HOST}/repository/npm-hosted/"
 
     if [[ -n "${RELEASE_VERSION:-}" ]]; then
       echo "=== publish RELEASE_VERSION=${RELEASE_VERSION} ==="
