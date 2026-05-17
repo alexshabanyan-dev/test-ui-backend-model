@@ -15,7 +15,7 @@ Nexus: `http://2.27.22.23:8081`
 | ID | Тип | Для чего |
 |----|-----|----------|
 | `nexus-user-pass` | Username with password | Maven (`NEXUS_USERNAME` / `NEXUS_PASSWORD`) |
-| `nexus-npm-token` | Secret text | npm (`NEXUS_NPM_TOKEN`) |
+| ~~`nexus-npm-token`~~ | не нужен | npm auth = тот же `nexus-user-pass` (base64 в скрипте) |
 
 Токен npm: Nexus → профиль пользователя → **User Token** (или npm login один раз локально и взять token).
 
@@ -42,9 +42,8 @@ Nexus: `http://2.27.22.23:8081`
 ### Build Environment
 
 - ✓ **Provide Node & npm bin/ folder to PATH** → ваша NodeJS installation (например `nodejs24.15`)
-- ✓ **Use secret text(s) or file(s)** — только если `DO_PUBLISH` будет true при сборке, или всегда (безвредно):
-  - Secret text → Variable: `NEXUS_NPM_TOKEN` → `nexus-npm-token`
-  - Username and password → Username: `NEXUS_USERNAME`, Password: `NEXUS_PASSWORD` → `nexus-user-pass`
+- ✓ **Use secret text(s) or file(s)**:
+  - Username and password → `NEXUS_USERNAME` / `NEXUS_PASSWORD` → `nexus-user-pass`
 
 ### Build → Execute shell
 
