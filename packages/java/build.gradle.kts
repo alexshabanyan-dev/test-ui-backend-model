@@ -1,13 +1,6 @@
 plugins {
     java
     `maven-publish`
-    id("io.spring.dependency-management") version "1.1.7"
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.6")
-    }
 }
 
 group = "com.example"
@@ -25,8 +18,12 @@ repositories {
 }
 
 dependencies {
-    // Только аннотации в артефакте; databind версии задаёт потребитель (Spring Boot 4 → Jackson 3).
-    compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+    // quicktype генерит com.fasterxml.jackson.* (Serializer/Deserializer, Converter).
+    // compileOnly — в Nexus не тянем databind транзитивно; на compile Jenkins classpath нужен полный Jackson 2.
+    val jackson = "2.17.3"
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:$jackson")
+    compileOnly("com.fasterxml.jackson.core:jackson-annotations:$jackson")
+    compileOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson")
 }
 
 val schemaFile = file("../../schema/MasterServiceMeta.json")
