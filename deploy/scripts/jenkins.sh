@@ -45,9 +45,12 @@ case "$MODE" in
 EOF
 
     echo "=== npm auth check ==="
-    cd "${ROOT}/packages/ts"
-    npm whoami --userconfig="${ROOT}/.npmrc" --registry="http://${NEXUS_HOST}/repository/npm-hosted/"
+    npm whoami \
+      --userconfig="${ROOT}/.npmrc" \
+      --registry="http://${NEXUS_HOST}/repository/npm-hosted/" \
+      --prefix="${ROOT}/packages/ts"
 
+    cd "${ROOT}"
     if [[ -n "${RELEASE_VERSION:-}" ]]; then
       echo "=== publish RELEASE_VERSION=${RELEASE_VERSION} ==="
       make publish RELEASE_VERSION="${RELEASE_VERSION}"
