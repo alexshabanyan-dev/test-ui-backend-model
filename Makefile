@@ -8,6 +8,9 @@ JAVA_PKG := $(ROOT)/packages/java
 
 .PHONY: help deps-ts codegen build build-ts build-java clean publish publish-ts publish-java pack-ts
 
+# Optional for CI publish: make publish RELEASE_VERSION=0.1.1
+RELEASE_VERSION ?=
+
 help:
 	@echo "Targets:"
 	@echo "  make deps-ts     npm ci in packages/ts (typescript + quicktype + codegen)"
@@ -18,6 +21,7 @@ help:
 	@echo "  make publish-ts  build-ts + npm publish (packages/ts)"
 	@echo "  make publish-java build-java + ./gradlew publish"
 	@echo "  make publish     publish-ts and publish-java"
+	@echo "  RELEASE_VERSION=0.1.1 make publish  bump npm + maven version before publish"
 	@echo "  make pack-ts     build-ts + npm pack"
 	@echo "  make clean       remove build outputs"
 
@@ -55,9 +59,12 @@ pack-ts: build-ts
 	cd "$(TS_PKG)" && npm pack
 
 publish-ts: build-ts
+ifdef RELEASE_VERSION
+	cd "$(TS_PKG)" && npm version "$(RELEASE_VERSION)" --no-git-tag-version --allow-same-version
+endif
 	cd "$(TS_PKG)" && npm publish
 
 publish-java: build-java
-	cd "$(JAVA_PKG)" && ./gradlew publish
+	cd "$(JAVA_PKG)" && ./gradlew publish $(if $(RELEASE_VERSION),-PreleaseVersion=$(RELEASE_VERSION),)
 
 publish: publish-ts publish-java
