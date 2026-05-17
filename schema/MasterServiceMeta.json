@@ -1990,25 +1990,24 @@
                 },
                 "widget": {
                     "anyOf": [
-                    {
-                        "$ref": "#/definitions/WidgetLegacy"
-                    }
-                ],
+                        {
+                            "$ref": "#/definitions/WidgetLegacy"
+                        }
+                    ]
+                },
                 "permissions": {
                     "description": "Полномочие, необходимое для работы пользователя с виджетом",
                     "items": {
-                                "anyOf": [
-                                    {
-                                        "$ref": "#/definitions/Permission"
-                                    },
-                                    {
-                                        "$ref": "#/definitions/BasePermission"
-                                    }
-                                ]
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/Permission"
                             },
+                            {
+                                "$ref": "#/definitions/BasePermission"
+                            }
+                        ]
+                    },
                     "type": "array"
-                },
-                "type": "object"
                 }
             },
             "required": [
@@ -2034,25 +2033,24 @@
                 },
                 "widget": {
                     "anyOf": [
-                    {
-                        "$ref": "#/definitions/WidgetMeta"
-                    }
-                ],
+                        {
+                            "$ref": "#/definitions/WidgetMeta"
+                        }
+                    ]
+                },
                 "permissions": {
                     "description": "Полномочие, необходимое для работы пользователя с виджетом",
                     "items": {
-                                "anyOf": [
-                                    {
-                                        "$ref": "#/definitions/Permission"
-                                    },
-                                    {
-                                        "$ref": "#/definitions/BasePermission"
-                                    }
-                                ]
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/Permission"
                             },
+                            {
+                                "$ref": "#/definitions/BasePermission"
+                            }
+                        ]
+                    },
                     "type": "array"
-                },
-                "type": "object"
                 }
             },
             "required": [
@@ -2077,14 +2075,17 @@
                         "type": "string"
                     },
                     "widgets": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/ViewMetaWidgetLegacy"
-                            },
-                            {
-                                "$ref": "#/definitions/ViewMetaWidget"
-                            }
-                        ],
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/definitions/ViewMetaWidgetLegacy"
+                                },
+                                {
+                                    "$ref": "#/definitions/ViewMetaWidget"
+                                }
+                            ]
+                        },
                         "description": "Widgets present on the view"
                     }
                 },
@@ -2136,7 +2137,6 @@
                 },
                 "required": [
                     "name",
-                    "navigation",
                     "primaryViewName",
                     "primaryViews",
                     "title"

@@ -8,6 +8,25 @@ Nexus: `http://2.26.86.191:8081`
 
 ---
 
+## 0. Один раз: репозиторий npm-hosted в Nexus
+
+Без него `npm publish` даёт **404 Repository not found**.
+
+**UI:** шестерёнка → **Repository** → **Repositories** → **Create repository** → **npm (hosted)** → имя **`npm-hosted`** → Create.
+
+**CLI** (с машины, где открыт порт 8081):
+
+```bash
+export NEXUS_URL=http://2.26.86.191:8081
+export NEXUS_USER=admin
+export NEXUS_PASSWORD='...'
+bash deploy/scripts/nexus-create-repos.sh
+```
+
+Проверка: Browse → **npm-hosted** или Search → npm → `@example/ui-backend-model`.
+
+---
+
 ## 1. Credentials в Jenkins
 
 **Manage Jenkins → Credentials → System → Global → Add Credentials**

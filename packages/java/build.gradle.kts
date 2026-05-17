@@ -1,6 +1,13 @@
 plugins {
     java
     `maven-publish`
+    id("io.spring.dependency-management") version "1.1.7"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.6")
+    }
 }
 
 group = "com.example"
@@ -18,8 +25,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.3")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.3")
+    // Только аннотации в артефакте; databind версии задаёт потребитель (Spring Boot 4 → Jackson 3).
+    compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 }
 
 val schemaFile = file("../../schema/MasterServiceMeta.json")

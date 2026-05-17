@@ -4,7 +4,7 @@
 #   export NEXUS_URL=http://2.26.86.191:8081
 #   export NEXUS_USER=admin
 #   export NEXUS_PASSWORD='your-password'
-#   ./scripts/nexus-create-repos.sh
+#   bash deploy/scripts/nexus-create-repos.sh
 
 set -euo pipefail
 
@@ -19,14 +19,15 @@ echo "Nexus: ${NEXUS_URL}"
 
 create_repo() {
   local name="$1"
-  local body="$2"
-  if curl -sf "${auth[@]}" "${api}/repositories/${name}" >/dev/null 2>&1; then
+  local recipe="$2"
+  local body="$3"
+  if curl -sf "${auth[@]}" "${api}/repositories" | grep -q "\"name\"[[:space:]]*:[[:space:]]*\"${name}\""; then
     echo "  repo exists: ${name}"
     return 0
   fi
-  curl -sf "${auth[@]}" -X POST "${api}/repositories/${2:-hosted}" \
+  curl -sf "${auth[@]}" -X POST "${api}/repositories/${recipe}" \
     -H "Content-Type: application/json" \
-    -d "${body}" >/dev/null
+    -d "${body}"
   echo "  created: ${name}"
 }
 
