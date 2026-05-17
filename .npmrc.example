@@ -1,17 +1,17 @@
 # Copy to project root as .npmrc (do not commit real credentials):
 #   cp .npmrc.example .npmrc
 #
-# Nexus UI: http://2.27.22.23:8081/#browse/browse:npm-hosted
+# Nexus UI: http://2.26.86.191:8081/#browse/browse:npm-hosted
 # Publish URL (not the browse URL):
-#   http://2.27.22.23:8081/repository/npm-hosted/
+#   http://2.26.86.191:8081/repository/npm-hosted/
 
-@example:registry=http://2.27.22.23:8081/repository/npm-hosted/
+@example:registry=http://2.26.86.191:8081/repository/npm-hosted/
 
 # Option A: token (recommended for CI — create in Nexus → User Token or npm bearer token)
-# //2.27.22.23:8081/repository/npm-hosted/:_authToken=${NEXUS_NPM_TOKEN}
+# //2.26.86.191:8081/repository/npm-hosted/:_authToken=${NEXUS_NPM_TOKEN}
 
 # Option B: base64(user:password) — run: echo -n 'user:pass' | base64
-# //2.27.22.23:8081/repository/npm-hosted/:_auth=BASE64_USER_COLON_PASS
+# //2.26.86.191:8081/repository/npm-hosted/:_auth=BASE64_USER_COLON_PASS
 
 # Option C: leave empty and run once:
-#   npm login --registry=http://2.27.22.23:8081/repository/npm-hosted/
+#   npm login --registry=http://2.26.86.191:8081/repository/npm-hosted/

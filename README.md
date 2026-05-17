@@ -65,8 +65,8 @@ cd ../..
 
 | Артефакт | Координаты | Repository URL |
 |----------|------------|----------------|
-| npm | `@example/ui-backend-model` | `http://2.27.22.23:8081/repository/npm-hosted/` |
-| Maven | `com.example:ui-backend-model` | `http://2.27.22.23:8081/repository/maven-releases/` |
+| npm | `@example/ui-backend-model` | `http://2.26.86.191:8081/repository/npm-hosted/` |
+| Maven | `com.example:ui-backend-model` | `http://2.26.86.191:8081/repository/maven-releases/` |
 
 ```bash
 cp .npmrc.example .npmrc

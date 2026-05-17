@@ -2,7 +2,7 @@
 
 Сервер: [http://2.26.86.191:8080/](http://2.26.86.191:8080/)  
 Репозиторий: [test-ui-backend-model](https://github.com/alexshabanyan-dev/test-ui-backend-model)  
-Nexus: `http://2.27.22.23:8081`
+Nexus: `http://2.26.86.191:8081`
 
 Скрипт в репозитории: `deploy/scripts/jenkins.sh` (`build` | `publish`).
 
@@ -93,7 +93,7 @@ fi
 **Сеть с Jenkins-хоста**
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" http://2.27.22.23:8081/
+curl -s -o /dev/null -w "%{http_code}\n" http://2.26.86.191:8081/
 ```
 
 ---

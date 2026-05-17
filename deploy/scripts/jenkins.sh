@@ -13,7 +13,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
 MODE="${1:-build}"
-NEXUS_HOST="${NEXUS_HOST:-2.27.22.23:8081}"
+NEXUS_HOST="${NEXUS_HOST:-2.26.86.191:8081}"
 
 export NEXUS_MAVEN_URL="${NEXUS_MAVEN_URL:-http://${NEXUS_HOST}/repository/maven-releases/}"
 export NEXUS_MAVEN_REPOSITORY="${NEXUS_MAVEN_REPOSITORY:-maven-releases}"

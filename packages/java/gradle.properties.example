@@ -1,7 +1,7 @@
 # Add these lines to packages/java/gradle.properties (file already exists with jvm opts).
 # Do NOT commit real passwords.
 
-nexusUrl=http://2.27.22.23:8081/repository/maven-releases/
+nexusUrl=http://2.26.86.191:8081/repository/maven-releases/
 nexusMavenRepository=maven-releases
 nexusUsername=REPLACE_WITH_NEXUS_USER
 nexusPassword=REPLACE_WITH_NEXUS_PASSWORD

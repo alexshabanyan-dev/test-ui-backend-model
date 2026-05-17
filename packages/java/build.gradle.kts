@@ -101,7 +101,7 @@ publishing {
             url = uri(
                 findProperty("nexusUrl")?.toString()
                     ?: System.getenv("NEXUS_MAVEN_URL")
-                    ?: "http://2.27.22.23:8081/repository/$repoName/",
+                    ?: "http://2.26.86.191:8081/repository/$repoName/",
             )
             isAllowInsecureProtocol = url.scheme == "http"
             credentials {

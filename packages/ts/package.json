@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "files": ["dist", "schema"],
   "publishConfig": {
-    "registry": "http://2.27.22.23:8081/repository/npm-hosted/",
+    "registry": "http://2.26.86.191:8081/repository/npm-hosted/",
     "access": "restricted"
   },
   "scripts": {
