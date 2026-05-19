@@ -57,9 +57,9 @@ cd ../..
 
 > Схема большая (~2700 строк): первая генерация TS/Java может занять заметное время.
 
-**Java codegen:** [quicktype](https://quicktype.io/) читает **эталон** `schema/MasterServiceMeta.json` напрямую (Jackson по умолчанию).  
-Исходники: `packages/java/build/generated-sources/quicktype/`. В JAR для runtime — тот же эталон из `schema/`.  
-Перед `./gradlew build` нужен `make deps-ts` (quicktype в `packages/ts/node_modules`).
+**Java codegen:** [jsonschema2pojo](https://www.jsonschema2pojo.org/) (`annotationStyle=jackson3`, Spring Boot 4 / Jackson 3).  
+Исходники: `packages/java/build/generated-sources/jsonschema2pojo/`. В JAR — эталон `schema/MasterServiceMeta.json`.  
+`make build-java` не требует npm (только Gradle).
 
 ## Публикация в Nexus
 

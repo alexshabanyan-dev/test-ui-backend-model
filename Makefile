@@ -1,5 +1,5 @@
 # Schema-first contract repo: Make orchestrates Node (TS) + Gradle (Java).
-# Node/npm only under packages/ts (TS codegen + quicktype for Java).
+# Node/npm only under packages/ts (TS codegen). Java — jsonschema2pojo (Gradle plugin).
 
 ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 TS_PKG := $(ROOT)/packages/ts
@@ -13,11 +13,11 @@ RELEASE_VERSION ?=
 
 help:
 	@echo "Targets:"
-	@echo "  make deps-ts     npm ci in packages/ts (typescript + quicktype + codegen)"
+	@echo "  make deps-ts     npm ci in packages/ts (typescript + codegen)"
 	@echo "  make codegen     generate TS from schema (requires deps-ts)"
 	@echo "  make build       codegen + tsc + gradle build (ts and java in parallel)"
 	@echo "  make build-ts    codegen + tsc"
-	@echo "  make build-java  deps-ts + ./gradlew build (quicktype → Java)"
+	@echo "  make build-java  ./gradlew build (jsonschema2pojo jackson3 → Java)"
 	@echo "  make publish-ts  build-ts + npm publish (packages/ts)"
 	@echo "  make publish-java build-java + ./gradlew publish"
 	@echo "  make publish     publish-ts and publish-java"
@@ -39,7 +39,7 @@ codegen: deps-ts
 build-ts: codegen
 	cd "$(TS_PKG)" && npm run build
 
-build-java: deps-ts
+build-java:
 	cd "$(JAVA_PKG)" && ./gradlew build
 
 build: codegen

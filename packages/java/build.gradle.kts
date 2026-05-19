@@ -1,6 +1,14 @@
 plugins {
     java
     `maven-publish`
+    id("io.spring.dependency-management") version "1.1.7"
+    id("org.jsonschema2pojo") version "1.3.3"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.6")
+    }
 }
 
 group = "com.example"
@@ -18,64 +26,30 @@ repositories {
 }
 
 dependencies {
-    // quicktype генерит com.fasterxml.jackson.* (Serializer/Deserializer, Converter).
-    // compileOnly — в Nexus не тянем databind транзитивно; на compile Jenkins classpath нужен полный Jackson 2.
-    val jackson = "2.17.3"
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:$jackson")
-    compileOnly("com.fasterxml.jackson.core:jackson-annotations:$jackson")
-    compileOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson")
+    // Jackson 3 (Spring Boot 4). @JsonProperty — com.fasterxml.jackson.annotation.
+    compileOnly("tools.jackson.core:jackson-databind")
+    compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 }
 
-val schemaFile = file("../../schema/MasterServiceMeta.json")
-val quicktypeOutDir = layout.buildDirectory.dir("generated-sources/quicktype")
+val schemaDir = file("../../schema")
 
-tasks.register<Exec>("quicktypeGenerate") {
-    group = "build"
-    description = "Generate Java types from SSOT schema (quicktype, Jackson)"
-
-    val outDir = quicktypeOutDir.get().asFile
-    val quicktypeBin =
-        file("../ts/node_modules/.bin/quicktype").takeIf { it.exists() }
-            ?: error(
-                "quicktype not found. Install TS deps first: make deps-ts " +
-                    "(or cd packages/ts && npm install)",
-            )
-
-    inputs.file(schemaFile)
-    outputs.dir(outDir)
-
-    doFirst {
-        outDir.deleteRecursively()
-        outDir.mkdirs()
-    }
-
-    val outFile = outDir.resolve("MasterServiceMeta.java")
-
-    commandLine(
-        quicktypeBin.absolutePath,
-        "--src-lang",
-        "schema",
-        "--lang",
-        "java",
-        "--package",
-        "com.example.metamodel",
-        "-o",
-        outFile.absolutePath,
-        schemaFile.absolutePath,
-    )
-}
-
-tasks.named<JavaCompile>("compileJava") {
-    dependsOn("quicktypeGenerate")
+// Kotlin DSL: setSource() (не `source =` — конфликт с Gradle), enum для стиля/типа
+jsonSchema2Pojo {
+    setSource(files(schemaDir))
+    targetDirectory = layout.buildDirectory.dir("generated-sources/jsonschema2pojo").get().asFile
+    targetPackage = "com.example.metamodel"
+    setAnnotationStyle("jackson3")
+    setSourceType("jsonschema")
+    removeOldOutput = true
+    includeHashcodeAndEquals = false
+    includeToString = false
+    setIncludeAdditionalProperties(false)
 }
 
 sourceSets {
     main {
-        java {
-            srcDir(quicktypeOutDir)
-        }
         resources {
-            srcDir("../../schema")
+            srcDir(schemaDir)
             include("MasterServiceMeta.json")
         }
     }

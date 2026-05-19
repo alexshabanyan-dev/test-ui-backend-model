@@ -4,8 +4,8 @@
 #   bash deploy/scripts/jenkins.sh build
 #   bash deploy/scripts/jenkins.sh publish
 #
-# Publish needs Jenkins bindings: NEXUS_USERNAME, NEXUS_PASSWORD (nexus-user-pass)
-# Optional: RELEASE_VERSION=0.1.2
+# Publish needs Jenkins credentials: NEXUS_USERNAME, NEXUS_PASSWORD (nexus-user-pass)
+# Optional: RELEASE_VERSION=0.1.4
 
 set -euo pipefail
 
@@ -50,7 +50,6 @@ EOF
       --registry="http://${NEXUS_HOST}/repository/npm-hosted/" \
       --prefix="${ROOT}/packages/ts"
 
-    cd "${ROOT}"
     if [[ -n "${RELEASE_VERSION:-}" ]]; then
       echo "=== publish RELEASE_VERSION=${RELEASE_VERSION} ==="
       make publish RELEASE_VERSION="${RELEASE_VERSION}"
